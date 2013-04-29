@@ -1,0 +1,50 @@
+dnl
+dnl Copyright © 2013 Keith Packard
+dnl
+dnl Permission to use, copy, modify, distribute, and sell this software and its
+dnl documentation for any purpose is hereby granted without fee, provided that
+dnl the above copyright notice appear in all copies and that both that copyright
+dnl notice and this permission notice appear in supporting documentation, and
+dnl that the name of the copyright holders not be used in advertising or
+dnl publicity pertaining to distribution of the software without specific,
+dnl written prior permission.  The copyright holders make no representations
+dnl about the suitability of this software for any purpose.  It is provided "as
+dnl is" without express or implied warranty.
+dnl
+dnl THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+dnl INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+dnl EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+dnl CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+dnl DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+dnl TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+dnl OF THIS SOFTWARE.
+dnl
+dnl
+dnl Process this file with autoconf to create configure.
+
+AC_PREREQ([2.57])
+
+AC_INIT(libxshmfence, 0.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], libxshmfence)
+AM_INIT_AUTOMAKE([dist-bzip2 foreign])
+AM_MAINTAINER_MODE
+
+# Require xorg-macros: XORG_CWARNFLAGS, XORG_CHANGELOG, XORG_WITH_LINT
+m4_ifndef([XORG_MACROS_VERSION], [AC_FATAL([must install xorg-macros 1.2 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.2)
+AM_CONFIG_HEADER(config.h)
+
+# Check for progs
+AC_PROG_CC
+AC_PROG_LIBTOOL
+XORG_CWARNFLAGS
+
+dnl Allow checking code with lint, sparse, etc.
+XORG_WITH_LINT
+LINT_FLAGS="${LINT_FLAGS} ${FONTENC_CFLAGS}"
+		  
+XORG_RELEASE_VERSION
+XORG_CHANGELOG
+
+AC_OUTPUT([Makefile
+	   src/Makefile
+           xshmfence.pc])
