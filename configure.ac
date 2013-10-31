@@ -24,7 +24,7 @@ dnl Process this file with autoconf to create configure.
 
 AC_PREREQ([2.57])
 
-AC_INIT(libxshmfence, 0.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], libxshmfence)
+AC_INIT(libxshmfence, 1.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], libxshmfence)
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
 
