@@ -22,29 +22,30 @@ dnl
 dnl
 dnl Process this file with autoconf to create configure.
 
-AC_PREREQ([2.57])
+AC_PREREQ([2.60])
+AC_INIT([libxshmfence], [1.0],
+        [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], [libxshmfence])
+AC_CONFIG_SRCDIR([Makefile.am])
+AC_CONFIG_HEADERS([config.h])
 
-AC_INIT(libxshmfence, 1.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], libxshmfence)
-AM_INIT_AUTOMAKE([dist-bzip2 foreign])
+# Initialize Automake
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
 
-# Require xorg-macros: XORG_CWARNFLAGS, XORG_CHANGELOG, XORG_WITH_LINT
-m4_ifndef([XORG_MACROS_VERSION], [AC_FATAL([must install xorg-macros 1.2 or later before running autoconf/autogen])])
-XORG_MACROS_VERSION(1.2)
-AM_CONFIG_HEADER(config.h)
-
-# Check for progs
-AC_PROG_CC
+# Initialize libtool
 AC_PROG_LIBTOOL
-XORG_CWARNFLAGS
+
+# Require xorg-macros: XORG_DEFAULT_OPTIONS, XORG_WITH_LINT
+m4_ifndef([XORG_MACROS_VERSION],
+          [m4_fatal([must install xorg-macros 1.3 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.3)
+XORG_DEFAULT_OPTIONS
 
 dnl Allow checking code with lint, sparse, etc.
 XORG_WITH_LINT
 LINT_FLAGS="${LINT_FLAGS} ${FONTENC_CFLAGS}"
-		  
-XORG_RELEASE_VERSION
-XORG_CHANGELOG
 
-AC_OUTPUT([Makefile
-	   src/Makefile
-           xshmfence.pc])
+AC_CONFIG_FILES([Makefile
+                 src/Makefile
+                 xshmfence.pc])
+AC_OUTPUT
