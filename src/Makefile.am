@@ -1,9 +1,8 @@
 lib_LTLIBRARIES = libxshmfence.la
 
 libxshmfence_la_SOURCES = \
-        xshmfence.c
-
-noinst_HEADERS = xshmfenceint.h
+        xshmfence.c	\
+	xshmfenceint.h
 
 AM_CFLAGS = $(CWARNFLAGS)
 
