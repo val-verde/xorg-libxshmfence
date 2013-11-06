@@ -5,6 +5,8 @@ libxshmfence_la_SOURCES = \
 
 noinst_HEADERS = xshmfenceint.h
 
+AM_CFLAGS = $(CWARNFLAGS)
+
 libxshmfence_la_LDFLAGS = -version-number 1:0:0 -no-undefined
 
 libxshmfenceincludedir = $(includedir)/X11
