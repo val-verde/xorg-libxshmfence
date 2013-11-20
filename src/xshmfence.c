@@ -97,7 +97,6 @@ xshmfence_reset(struct xshmfence *f)
 	__sync_bool_compare_and_swap(&f->v, 1, 0);
 }
 
-
 /**
  * xshmfence_alloc_shm:
  *
@@ -111,12 +110,19 @@ int
 xshmfence_alloc_shm(void)
 {
 	char	template[] = SHMDIR "/shmfd-XXXXXX";
-	int	fd = mkstemp(template);
+	int	fd;
 
+#ifdef O_TMPFILE
+	fd = open(SHMDIR, O_TMPFILE|O_RDWR|O_CLOEXEC|O_EXCL, 0666);
 	if (fd < 0)
+#endif
+        {
+            fd = mkstemp(template);
+            if (fd < 0)
 		return fd;
-	unlink(template);
-	ftruncate(fd, sizeof (int32_t));
+            unlink(template);
+        }
+	ftruncate(fd, sizeof (struct xshmfence));
 	return fd;
 }
 

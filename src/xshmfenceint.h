@@ -32,6 +32,8 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <values.h>
 #include "xshmfence.h"
