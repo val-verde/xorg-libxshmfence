@@ -1,8 +1,11 @@
 lib_LTLIBRARIES = libxshmfence.la
 
+FUTEX_SOURCES=xshmfence_futex.c xshmfence_futex.h
+
 libxshmfence_la_SOURCES = \
-        xshmfence.c	\
-	xshmfenceint.h
+	xshmfenceint.h \
+	xshmfence_alloc.c \
+	$(FUTEX_SOURCES)
 
 AM_CFLAGS = $(CWARNFLAGS)
 

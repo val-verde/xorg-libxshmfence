@@ -26,10 +26,6 @@
 
 #include "xshmfenceint.h"
 
-struct xshmfence {
-    int32_t     v;
-};
-
 /**
  * xshmfence_trigger:
  * @f: An X fence
@@ -95,64 +91,4 @@ void
 xshmfence_reset(struct xshmfence *f)
 {
 	__sync_bool_compare_and_swap(&f->v, 1, 0);
-}
-
-/**
- * xshmfence_alloc_shm:
- *
- * Allocates a shared memory object large enough to hold a single
- * fence.
- *
- * Return value: the file descriptor of the object, or -1 on failure
- * (in which case, errno will be set as appropriate).
- **/
-int
-xshmfence_alloc_shm(void)
-{
-	char	template[] = SHMDIR "/shmfd-XXXXXX";
-	int	fd;
-
-#ifdef O_TMPFILE
-	fd = open(SHMDIR, O_TMPFILE|O_RDWR|O_CLOEXEC|O_EXCL, 0666);
-	if (fd < 0)
-#endif
-        {
-            fd = mkstemp(template);
-            if (fd < 0)
-		return fd;
-            unlink(template);
-        }
-	ftruncate(fd, sizeof (struct xshmfence));
-	return fd;
-}
-
-/**
- * xshmfence_map_shm:
- *
- * Map a shared memory fence referenced by @fd.
- *
- * Return value: the fence or NULL (in which case, errno will be set
- * as appropriate).
- **/
-struct xshmfence *
-xshmfence_map_shm(int fd)
-{
-	struct xshmfence *addr;
-	addr = mmap (NULL, sizeof (struct xshmfence) , PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
-	if (addr == MAP_FAILED) {
-		close (fd);
-		return 0;
-	}
-	return addr;
-}
-
-/**
- * xshmfence_unmap_shm:
- *
- * Unap a shared memory fence @f.
- **/
-void
-xshmfence_unmap_shm(struct xshmfence *f)
-{
-        munmap(f, sizeof (struct xshmfence));
 }
