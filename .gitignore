@@ -76,3 +76,9 @@ core
 #		Edit the following section as needed
 # For example, !report.pc overrides *.pc. See 'man gitignore'
 #
+libxshmfence-*.announce
+test-driver
+test/test-suite.log
+test/xshmfence_test
+test/xshmfence_test.log
+test/xshmfence_test.trs
