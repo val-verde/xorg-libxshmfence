@@ -20,7 +20,7 @@
 # OF THIS SOFTWARE.
 #
 
-SUBDIRS = src
+SUBDIRS = src test
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = xshmfence.pc

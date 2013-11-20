@@ -91,5 +91,6 @@ esac
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile
+		 test/Makefile
                  xshmfence.pc])
 AC_OUTPUT
