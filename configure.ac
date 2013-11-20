@@ -75,6 +75,49 @@ AC_SUBST([PTHREAD_LIBS])
 AM_CONDITIONAL([FUTEX], [test x"$FUTEX" = xyes])
 AM_CONDITIONAL([PTHREAD], [test x"$PTHREAD" = xyes])
 
+PKG_CHECK_MODULES(XPROTO, xproto)
+
+AC_SUBST([XPROTO_CFLAGS])
+
+CFLAGS="$CFLAGS $XPROTO_CFLAGS"
+
+AC_ARG_ENABLE(visibility,     AC_HELP_STRING([--enable-visibility], [Enable symbol visibility (default: auto)]),
+				[SYMBOL_VISIBILITY=$enableval],
+				[SYMBOL_VISIBILITY=auto])
+
+dnl ==================================================================
+dnl symbol visibility
+symbol_visibility=
+have_visibility=disabled
+if test x$SYMBOL_VISIBILITY != xno; then
+    AC_MSG_CHECKING(for symbol visibility support)
+    if test x$GCC = xyes; then
+	VISIBILITY_CFLAGS="-fvisibility=hidden"
+    else
+	if test x$SUNCC = xyes; then
+	    VISIBILITY_CFLAGS="-xldscope=hidden"
+	else
+	    have_visibility=no
+	fi
+    fi
+    if test x$have_visibility != xno; then
+	AC_TRY_COMPILE(
+	    [#include <X11/Xfuncproto.h>
+	     extern _X_HIDDEN int hidden_int;
+	     extern _X_EXPORT int public_int;
+	     extern _X_HIDDEN int hidden_int_func(void);
+	     extern _X_EXPORT int public_int_func(void);],
+	    [],
+	    have_visibility=yes,
+	    have_visibility=no)
+    fi
+    AC_MSG_RESULT([$have_visibility])
+    if test x$have_visibility != xno; then
+	symbol_visibility=$VISIBILITY_CFLAGS
+	CFLAGS="$CFLAGS $VISIBILITY_CFLAGS"
+    fi
+fi
+
 AC_ARG_WITH(shared-memory-dir, AS_HELP_STRING([--with-shared-memory-dir=PATH], [Path to directory in a world-writable temporary directory for anonymous shared memory (default: auto)]),
 [],
 [with_shared_memory_dir=yes])

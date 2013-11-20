@@ -23,29 +23,31 @@
 #ifndef _XSHMFENCE_H_
 #define _XSHMFENCE_H_
 
+#include <X11/Xfuncproto.h>
+
 #define HAVE_STRUCT_XSHMFENCE   1
 
 struct xshmfence;
 
-int
+_X_EXPORT int 
 xshmfence_trigger(struct xshmfence *f);
 
-int
+_X_EXPORT int
 xshmfence_await(struct xshmfence *f);
 
-int
+_X_EXPORT int
 xshmfence_query(struct xshmfence *f);
 
-void
+_X_EXPORT void
 xshmfence_reset(struct xshmfence *f);
 
-int
+_X_EXPORT int
 xshmfence_alloc_shm(void);
 
-struct xshmfence *
+_X_EXPORT struct xshmfence *
 xshmfence_map_shm(int fd);
 
-void
+_X_EXPORT void
 xshmfence_unmap_shm(struct xshmfence *f);
 
 #endif /* _XSHMFENCE_H_ */
