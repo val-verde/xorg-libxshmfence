@@ -50,6 +50,31 @@ dnl
 dnl Locate a suitable tmp file system for creating shared memeory files
 dnl
 
+AC_ARG_ENABLE(futex,	AS_HELP_STRING([--enable-futex], [Enable futexes (default: auto)]),
+		[FUTEX=$enableval], [FUTEX=auto])
+
+if test "x$FUTEX" = "xauto"; then
+	AC_CHECK_HEADER([linux/futex.h], [FUTEX=yes], [FUTEX=no])
+fi
+
+if test "x$FUTEX" = "xyes"; then
+	PTHREAD=no
+	AC_DEFINE(HAVE_FUTEX,1,[Use futexes])
+else
+	PTHREAD=yes
+	AC_DEFINE(HAVE_PTHREAD,1,[Use pthread primitives])
+fi
+
+PTHREAD_LIBS=
+if test "x$PTHREAD" = "xyes"; then
+	AC_CHECK_LIB(pthread,pthread_create,[PTHREAD_LIBS=-lpthread],[PTHREAD_LIBS=])
+fi
+
+AC_SUBST([PTHREAD_LIBS])
+
+AM_CONDITIONAL([FUTEX], [test x"$FUTEX" = xyes])
+AM_CONDITIONAL([PTHREAD], [test x"$PTHREAD" = xyes])
+
 AC_ARG_WITH(shared-memory-dir, AS_HELP_STRING([--with-shared-memory-dir=PATH], [Path to directory in a world-writable temporary directory for anonymous shared memory (default: auto)]),
 [],
 [with_shared_memory_dir=yes])

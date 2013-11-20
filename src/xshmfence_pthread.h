@@ -20,20 +20,20 @@
  * OF THIS SOFTWARE.
  */
 
-#ifndef _XSHMFENCEINT_H_
-#define _XSHMFENCEINT_H_
+#ifndef _XSHMFENCE_PTHREAD_H_
+#define _XSHMFENCE_PTHREAD_H_
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include "xshmfence.h"
+#include <pthread.h>
+#include <sys/types.h>
 
-#if HAVE_FUTEX
-#include "xshmfence_futex.h"
-#endif
+struct xshmfence {
+    pthread_mutex_t lock;
+    pthread_cond_t  wakeup;
+    int             value;
+    int             waiting;
+};
 
-#if HAVE_PTHREAD
-#include "xshmfence_pthread.h"
-#endif
+void
+xshmfence_init(int fd);
 
-#endif /* _XSHMFENCEINT_H_ */
+#endif /* _XSHMFENCE_PTHREAD_H_ */
