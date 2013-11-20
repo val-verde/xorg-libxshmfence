@@ -22,6 +22,10 @@
 
 #include "xshmfenceint.h"
 
+struct xshmfence {
+    int32_t     v;
+};
+
 /**
  * xshmfence_trigger:
  * @f: An X fence
@@ -32,11 +36,11 @@
  * will be set as appropriate).
  **/
 int
-xshmfence_trigger(int32_t *f)
+xshmfence_trigger(struct xshmfence *f)
 {
-	if (__sync_val_compare_and_swap(f, 0, 1) == -1) {
-		atomic_store(f, 1);
-		if (futex_wake(f) < 0)
+	if (__sync_val_compare_and_swap(&f->v, 0, 1) == -1) {
+		atomic_store(&f->v, 1);
+		if (futex_wake(&f->v) < 0)
 			return -1;
 	}
 	return 0;
@@ -53,10 +57,10 @@ xshmfence_trigger(int32_t *f)
  * will be set as appropriate).
  **/
 int
-xshmfence_await(int32_t *f)
+xshmfence_await(struct xshmfence *f)
 {
-	while (__sync_val_compare_and_swap(f, 0, -1) != 1) {
-		if (futex_wait(f, -1)) {
+	while (__sync_val_compare_and_swap(&f->v, 0, -1) != 1) {
+		if (futex_wait(&f->v, -1)) {
 			if (errno != EWOULDBLOCK)
 				return -1;
 		}
@@ -71,9 +75,9 @@ xshmfence_await(int32_t *f)
  * Return value: 1 if @f is triggered, else returns 0.
  **/
 int
-xshmfence_query(int32_t *f)
+xshmfence_query(struct xshmfence *f)
 {
-	return atomic_fetch(f) == 1;
+	return atomic_fetch(&f->v) == 1;
 }
 
 /**
@@ -84,9 +88,9 @@ xshmfence_query(int32_t *f)
  * this function has no effect.
  **/
 void
-xshmfence_reset(int32_t *f)
+xshmfence_reset(struct xshmfence *f)
 {
-	__sync_bool_compare_and_swap(f, 1, 0);
+	__sync_bool_compare_and_swap(&f->v, 1, 0);
 }
 
 
@@ -120,11 +124,11 @@ xshmfence_alloc_shm(void)
  * Return value: the fence or NULL (in which case, errno will be set
  * as appropriate).
  **/
-int32_t *
+struct xshmfence *
 xshmfence_map_shm(int fd)
 {
-	void *addr;
-	addr = mmap (NULL, sizeof (int32_t) , PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+	struct xshmfence *addr;
+	addr = mmap (NULL, sizeof (struct xshmfence) , PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	if (addr == MAP_FAILED) {
 		close (fd);
 		return 0;
@@ -138,7 +142,7 @@ xshmfence_map_shm(int fd)
  * Unap a shared memory fence @f.
  **/
 void
-xshmfence_unmap_shm(int32_t *f)
+xshmfence_unmap_shm(struct xshmfence *f)
 {
-        munmap(f, sizeof (int32_t));
+        munmap(f, sizeof (struct xshmfence));
 }

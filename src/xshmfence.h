@@ -23,27 +23,29 @@
 #ifndef _XSHMFENCE_H_
 #define _XSHMFENCE_H_
 
-#include <stdint.h>
+#define HAVE_STRUCT_XSHMFENCE   1
+
+struct xshmfence;
 
 int
-xshmfence_trigger(int32_t *f);
+xshmfence_trigger(struct xshmfence *f);
 
 int
-xshmfence_await(int32_t *f);
+xshmfence_await(struct xshmfence *f);
 
 int
-xshmfence_query(int32_t *f);
+xshmfence_query(struct xshmfence *f);
 
 void
-xshmfence_reset(int32_t *f);
+xshmfence_reset(struct xshmfence *f);
 
 int
 xshmfence_alloc_shm(void);
 
-int32_t *
+struct xshmfence *
 xshmfence_map_shm(int fd);
 
 void
-xshmfence_unmap_shm(int32_t *f);
+xshmfence_unmap_shm(struct xshmfence *f);
 
 #endif /* _XSHMFENCE_H_ */
