@@ -45,6 +45,50 @@ dnl Allow checking code with lint, sparse, etc.
 XORG_WITH_LINT
 LINT_FLAGS="${LINT_FLAGS} ${FONTENC_CFLAGS}"
 
+		  
+dnl
+dnl Locate a suitable tmp file system for creating shared memeory files
+dnl
+
+AC_ARG_WITH(shared-memory-dir, AS_HELP_STRING([--with-shared-memory-dir=PATH], [Path to directory in a world-writable temporary directory for anonymous shared memory (default: auto)]),
+[],
+[with_shared_memory_dir=yes])
+
+shmdirs="/run/shm /var/tmp /tmp"
+
+case x"$with_shared_memory_dir" in
+xyes)
+	for dir in $shmdirs; do
+		case x"$with_shared_memory_dir" in
+		xyes)
+			echo Checking temp dir "$dir"
+			if test -d "$dir"; then
+				with_shared_memory_dir="$dir"
+			fi
+			;;
+		esac
+	done
+	;;
+x/*)
+	;;
+xno)
+	;;
+*)
+	AC_MSG_ERROR([Invalid directory specified for --with-shared-memory-dir: $with_shared_memory_dir])
+	;;
+esac
+
+case x"$with_shared_memory_dir" in
+xyes)
+	AC_MSG_ERROR([No directory found for shared memory temp files.])
+	;;
+xno)
+	;;
+*)
+	AC_DEFINE_UNQUOTED(SHMDIR, ["$with_shared_memory_dir"], [Directory for shared memory temp files])
+	;;
+esac
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  xshmfence.pc])

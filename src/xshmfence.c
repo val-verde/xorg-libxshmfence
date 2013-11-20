@@ -20,6 +20,10 @@
  * OF THIS SOFTWARE.
  */
 
+#if HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xshmfenceint.h"
 
 struct xshmfence {
@@ -106,7 +110,7 @@ xshmfence_reset(struct xshmfence *f)
 int
 xshmfence_alloc_shm(void)
 {
-	char	template[] = "/run/shm/shmfd-XXXXXX";
+	char	template[] = SHMDIR "/shmfd-XXXXXX";
 	int	fd = mkstemp(template);
 
 	if (fd < 0)
