@@ -51,7 +51,10 @@ xshmfence_alloc_shm(void)
 		return fd;
             unlink(template);
         }
-	ftruncate(fd, sizeof (struct xshmfence));
+	if (ftruncate(fd, sizeof (struct xshmfence)) < 0) {
+            close(fd);
+            return -1;
+        }
         xshmfence_init(fd);
 	return fd;
 }
