@@ -53,7 +53,16 @@ AC_ARG_ENABLE(futex,	AS_HELP_STRING([--enable-futex], [Enable futexes (default: 
 		[FUTEX=$enableval], [FUTEX=auto])
 
 if test "x$FUTEX" = "xauto"; then
-	AC_CHECK_HEADER([linux/futex.h], [FUTEX=yes], [FUTEX=no])
+	AC_CHECK_HEADER([linux/futex.h], [FUTEX=yes])
+fi
+
+if test "x$FUTEX" = "xauto"; then
+	AC_CHECK_HEADER([sys/umtx.h], [FUTEX=yes], [FUTEX=no],
+	    [#include <errno.h>
+	     #include <sys/types.h>])
+	if test "x$FUTEX" = "xyes"; then
+		AC_DEFINE(HAVE_UMTX, 1, [Use umtx])
+	fi
 fi
 
 if test "x$FUTEX" = "xyes"; then
