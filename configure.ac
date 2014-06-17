@@ -130,7 +130,7 @@ AC_ARG_WITH(shared-memory-dir, AS_HELP_STRING([--with-shared-memory-dir=PATH], [
 [],
 [with_shared_memory_dir=yes])
 
-shmdirs="/run/shm /var/tmp /tmp"
+shmdirs="/run/shm /dev/shm /var/tmp /tmp"
 
 case x"$with_shared_memory_dir" in
 xyes)
