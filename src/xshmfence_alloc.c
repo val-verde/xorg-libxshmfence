@@ -26,6 +26,34 @@
 
 #include "xshmfenceint.h"
 
+#if !HAVE_MEMFD_CREATE
+#if HAVE_DECL___NR_MEMFD_CREATE
+#include <asm/unistd.h>
+static int memfd_create(const char *name,
+			    unsigned int flags)
+{
+	return syscall(__NR_memfd_create, name, flags);
+}
+#define HAVE_MEMFD_CREATE	1
+#endif
+#endif
+
+#if HAVE_MEMFD_CREATE
+
+/* Get defines for the memfd_create syscall, using the
+ * header if available, or just defining the constants otherwise
+ */
+
+#if HAVE_MEMFD_H
+#include <sys/memfd.h>
+#else
+/* flags for memfd_create(2) (unsigned int) */
+#define MFD_CLOEXEC		0x0001U
+#define MFD_ALLOW_SEALING	0x0002U
+#endif
+
+#endif
+
 /**
  * xshmfence_alloc_shm:
  *
@@ -41,16 +69,22 @@ xshmfence_alloc_shm(void)
 	char	template[] = SHMDIR "/shmfd-XXXXXX";
 	int	fd;
 
-#ifdef O_TMPFILE
-	fd = open(SHMDIR, O_TMPFILE|O_RDWR|O_CLOEXEC|O_EXCL, 0666);
+#if HAVE_MEMFD_CREATE
+	fd = memfd_create("xshmfence", MFD_CLOEXEC|MFD_ALLOW_SEALING);
 	if (fd < 0)
 #endif
-        {
-            fd = mkstemp(template);
-            if (fd < 0)
-		return fd;
-            unlink(template);
-        }
+	{
+#ifdef O_TMPFILE
+		fd = open(SHMDIR, O_TMPFILE|O_RDWR|O_CLOEXEC|O_EXCL, 0666);
+		if (fd < 0)
+#endif
+		{
+			fd = mkstemp(template);
+			if (fd < 0)
+				return fd;
+			unlink(template);
+		}
+	}
 	if (ftruncate(fd, sizeof (struct xshmfence)) < 0) {
             close(fd);
             return -1;
