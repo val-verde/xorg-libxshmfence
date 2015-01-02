@@ -23,7 +23,7 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ([2.60])
-AC_INIT([libxshmfence], [1.1],
+AC_INIT([libxshmfence], [1.2],
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], [libxshmfence])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
