@@ -46,8 +46,8 @@ static inline int futex_wait(int32_t *addr, int32_t value) {
 
 #else
 
+#include <limits.h>
 #include <stdint.h>
-#include <values.h>
 #include <linux/futex.h>
 #include <sys/time.h>
 #include <sys/syscall.h>
@@ -58,7 +58,7 @@ static inline long sys_futex(void *addr1, int op, int val1, struct timespec *tim
 }
 
 static inline int futex_wake(int32_t *addr) {
-	return sys_futex(addr, FUTEX_WAKE, MAXINT, NULL, NULL, 0);
+	return sys_futex(addr, FUTEX_WAKE, INT_MAX, NULL, NULL, 0);
 }
 
 static inline int futex_wait(int32_t *addr, int32_t value) {
